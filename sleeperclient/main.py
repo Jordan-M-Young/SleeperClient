@@ -25,6 +25,15 @@ class SleeperClient():
         
         return requests.get(url=url,headers=self.headers)
     
+    def get_user_leagues(self, user_id: str, season: str) -> requests.Response:
+        url = f"{self.base_url}/user/{user_id}/leagues/nfl/{season}"
+        return requests.get(url=url,headers=self.headers)
+
+
+    def get_league(self, league_id: str) -> requests.Response:
+        url = f"{self.base_url}/league/{league_id}"
+        return requests.get(url=url,headers=self.headers)
+
 
 
 def main():
@@ -33,8 +42,20 @@ def main():
 
     resp = client.get_user(user_id=ID)
 
+    print("USER TEST")
     print(resp.status_code)
     print(resp.json())
+
+
+    print("USER LEAGUES TEST")
+    resp = client.get_user_leagues(ID, season="2026")
+    print(resp.status_code)
+    print(resp.json())
+
+
+
+
+
 
 if __name__ == "__main__":
     main()
