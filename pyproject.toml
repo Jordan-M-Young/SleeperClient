@@ -1,0 +1,25 @@
+[project]
+name = "sleeperclient"
+version = "0.1.0"
+description = "Client Library for Sleeper API"
+authors = [
+    {name = "Jordan-M-Young"}
+]
+license = {text = "Apache 2.0"}
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "requests (>=2.34.2,<3.0.0)"
+]
+
+[project.scripts]
+sleeperclient = "sleeperclient.main:main"
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.17.5"
+
