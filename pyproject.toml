@@ -1,20 +1,35 @@
 [project]
 name = "sleeperclient"
 version = "0.1.0"
-description = "Client Library for Sleeper API"
+description = "Python client library for the Sleeper fantasy football API"
 authors = [
     {name = "Jordan-M-Young"}
 ]
-license = {text = "Apache 2.0"}
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
+keywords = ["sleeper", "fantasy football", "nfl", "api", "client"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
     "requests (>=2.34.2,<3.0.0)"
 ]
 
-[project.scripts]
-sleeperclient = "sleeperclient.main:main"
-
+[project.urls]
+Homepage = "https://github.com/Jordan-M-Young/SleeperClient"
+Repository = "https://github.com/Jordan-M-Young/SleeperClient"
+Issues = "https://github.com/Jordan-M-Young/SleeperClient/issues"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -22,4 +37,12 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.17.5"
+pytest = "^9.2.0"
+pytest-cov = "^7.1.0"
+python-dotenv = "^1.2.4"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: calls the live Sleeper API (needs network and .env values)",
+]

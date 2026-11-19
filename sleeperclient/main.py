@@ -1,4 +1,11 @@
+from importlib.metadata import PackageNotFoundError, version
+
 import requests
+
+try:
+    __version__ = version("sleeperclient")
+except PackageNotFoundError:
+    __version__ = "0.0.0"
 
 
 class SleeperClient:
@@ -11,18 +18,24 @@ class SleeperClient:
     Attributes:
         base_url: Root URL of the Sleeper API.
         headers: HTTP headers sent with every request.
+        timeout: Seconds to wait for the server before giving up on a request.
     """
 
-    def __init__(self):
-        """Set up the client with the API base URL and default request headers."""
+    def __init__(self, timeout: float = 10):
+        """Set up the client with the API base URL and default request headers.
+
+        Args:
+            timeout: Seconds to wait for the server before a request raises
+                ``requests.Timeout``. Defaults to 10.
+        """
         self.base_url = "https://api.sleeper.app/v1"
 
         self.headers = {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:157.0) Gecko/20100101 Firefox/157.0",
+            "User-Agent": f"sleeperclient/{__version__}",
             "Accept": "application/json",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Accept-Encoding": "gzip, deflate, br, zstd",
         }
+
+        self.timeout = timeout
 
     def get_user(
         self, user_id: str | None = None, username: str | None = None
@@ -50,7 +63,7 @@ class SleeperClient:
         else:
             url = f"{self.base_url}/{endpoint}/{username}"
 
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_user_leagues(self, user_id: str, season: str) -> requests.Response:
         """Fetch all NFL leagues a user belongs to in a given season.
@@ -63,7 +76,7 @@ class SleeperClient:
             The response from ``GET /user/<user_id>/leagues/nfl/<season>``.
         """
         url = f"{self.base_url}/user/{user_id}/leagues/nfl/{season}"
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_avatar(self, avatar_id: str, thumbnail=False):
         """Fetch a user or league avatar image from the Sleeper CDN.
@@ -82,7 +95,7 @@ class SleeperClient:
         else:
             url = f"https://sleepercdn.com/avatars/{avatar_id}"
 
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_league(self, league_id: str) -> requests.Response:
         """Fetch details for a single league.
@@ -94,7 +107,7 @@ class SleeperClient:
             The response from ``GET /league/<league_id>``.
         """
         url = f"{self.base_url}/league/{league_id}"
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_league_rosters(self, league_id: str) -> requests.Response:
         """Fetch all rosters in a league.
@@ -106,7 +119,7 @@ class SleeperClient:
             The response from ``GET /league/<league_id>/rosters``.
         """
         url = f"{self.base_url}/league/{league_id}/rosters"
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_league_users(self, league_id: str) -> requests.Response:
         """Fetch all users in a league.
@@ -118,7 +131,7 @@ class SleeperClient:
             The response from ``GET /league/<league_id>/users``.
         """
         url = f"{self.base_url}/league/{league_id}/users"
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_league_matchups(self, league_id: str, week: str) -> requests.Response:
         """Fetch all matchups in a league for a given week.
@@ -131,7 +144,7 @@ class SleeperClient:
             The response from ``GET /league/<league_id>/matchups/<week>``.
         """
         url = f"{self.base_url}/league/{league_id}/matchups/{week}"
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_league_playoff_bracket(
         self, league_id: str, winner=True
@@ -151,7 +164,7 @@ class SleeperClient:
             url = f"{self.base_url}/league/{league_id}/winners_bracket"
         else:
             url = f"{self.base_url}/league/{league_id}/losers_bracket"
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_league_transactions(self, league_id: str, week: str) -> requests.Response:
         """Fetch all transactions in a league for a given week.
@@ -166,7 +179,7 @@ class SleeperClient:
             The response from ``GET /league/<league_id>/transactions/<week>``.
         """
         url = f"{self.base_url}/league/{league_id}/transactions/{week}"
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_traded_picks(self, league_id: str) -> requests.Response:
         """Fetch all draft picks that have been traded in a league.
@@ -178,7 +191,7 @@ class SleeperClient:
             The response from ``GET /league/<league_id>/traded_picks``.
         """
         url = f"{self.base_url}/league/{league_id}/traded_picks"
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
     def get_state(self, sport: str) -> requests.Response:
         """Fetch the current state of a sport, such as the current week and season.
@@ -190,27 +203,32 @@ class SleeperClient:
             The response from ``GET /state/<sport>``.
         """
         url = f"{self.base_url}/state/{sport}"
-        return requests.get(url=url, headers=self.headers)
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
+    def get_drafts_for_user(
+        self, user_id: str, season: str, sport: str = "nfl"
+    ) -> requests.Response:
+        """Fetch all drafts a user took part in for a given sport and season.
 
-def main():
-    LEAGUE_ID = ""
-    client = SleeperClient()
+        Args:
+            user_id: The user's numeric Sleeper ID, as a string.
+            season: The season year, e.g. ``"2026"``.
+            sport: The sport to query. Defaults to ``"nfl"``.
 
-    # print("USER TEST")
-    # resp = client.get_user(user_id=ID)
-    # print(resp.status_code)
-    # print(resp.json())
+        Returns:
+            The response from ``GET /user/<user_id>/drafts/<sport>/<season>``.
+        """
+        url = f"{self.base_url}/user/{user_id}/drafts/{sport}/{season}"
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
-    # print("USER LEAGUES TEST")
-    # resp = client.get_user_leagues(ID, season="2026")
-    # print(resp.status_code)
-    # print(resp.json())
+    def get_drafts_for_league(self, league_id: str) -> requests.Response:
+        """Fetch all drafts for a league.
 
-    resp = client.get_league(LEAGUE_ID)
-    print(resp.status_code)
-    print(resp.json())
+        Args:
+            league_id: The league's numeric Sleeper ID, as a string.
 
-
-if __name__ == "__main__":
-    main()
+        Returns:
+            The response from ``GET /league/<league_id>/drafts``.
+        """
+        url = f"{self.base_url}/league/{league_id}/drafts"
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
