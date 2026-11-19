@@ -2,7 +2,7 @@
 
 A small Python client library for the [Sleeper](https://sleeper.com) fantasy football API.
 
-It wraps Sleeper's public, read only endpoints. The API needs no authentication or API key. Each method returns the a `requests.Response` object, so you handle status codes and JSON decoding yourself.
+It wraps Sleeper's public, read only endpoints. The API needs no authentication or API key. Each method returns the a `requests.Response` object, so you'll have to handle status codes and JSON decoding yourself.
 
 ## Installation
 
