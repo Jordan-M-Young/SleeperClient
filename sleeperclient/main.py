@@ -232,3 +232,65 @@ class SleeperClient:
         """
         url = f"{self.base_url}/league/{league_id}/drafts"
         return requests.get(url=url, headers=self.headers, timeout=self.timeout)
+
+    def get_specific_draft(self, draft_id: str) -> requests.Response:
+        """Fetch details for a single draft.
+
+        Args:
+            draft_id: The draft's numeric Sleeper ID, as a string.
+
+        Returns:
+            The response from ``GET /draft/<draft_id>``.
+        """
+        url = f"{self.base_url}/draft/{draft_id}"
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
+
+    def get_draft_picks(self, draft_id: str) -> requests.Response:
+        """Fetch every pick made in a draft.
+
+        Args:
+            draft_id: The draft's numeric Sleeper ID, as a string.
+
+        Returns:
+            The response from ``GET /draft/<draft_id>/picks``.
+        """
+        url = f"{self.base_url}/draft/{draft_id}/picks"
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
+
+    def get_draft_traded_picks(self, draft_id: str) -> requests.Response:
+        """Fetch the picks that were traded before or during a draft.
+
+        Args:
+            draft_id: The draft's numeric Sleeper ID, as a string.
+
+        Returns:
+            The response from ``GET /draft/<draft_id>/traded_picks``.
+        """
+        url = f"{self.base_url}/draft/{draft_id}/traded_picks"
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
+
+    def get_all_players(self, position=None, active=True):
+        """Fetch NFL players, optionally filtered by position and active status.
+
+        The unfiltered response is large (several MB), so Sleeper asks that you
+        call this endpoint at most once a day and cache the result.
+
+        Args:
+            position: Only return players at this position, e.g. ``"QB"``.
+                If None, players at every position are returned.
+            active: If True, only return active players.
+
+        Returns:
+            The response from ``GET /players/nfl``, with ``position`` and
+            ``active`` added as query parameters.
+        """
+        url = f"{self.base_url}/players/nfl"
+
+        if position and active:
+            url = f"{url}?position={position}&active=true"
+        elif position:
+            url = f"{url}?position={position}"
+        else:
+            url = f"{url}?active=true"
+
+        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
