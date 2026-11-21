@@ -118,3 +118,36 @@ def test_get_all_players_params(client, fake_get, kwargs, expected_params):
     assert fake_get.last["url"] == f"{BASE}/players/nfl"
     assert fake_get.last["params"] == expected_params
     assert fake_get.last["timeout"] == client.timeout
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "expected_url", "expected_params"),
+    [
+        ({"action_type": "add"}, f"{BASE}/players/nfl/trending/add", {}),
+        ({"action_type": "drop"}, f"{BASE}/players/nfl/trending/drop", {}),
+        (
+            {"action_type": "add", "hours": 48},
+            f"{BASE}/players/nfl/trending/add",
+            {"lookback_hours": 48},
+        ),
+        (
+            {"action_type": "add", "limit": 10},
+            f"{BASE}/players/nfl/trending/add",
+            {"limit": 10},
+        ),
+        (
+            {"action_type": "drop", "hours": 12, "limit": 5},
+            f"{BASE}/players/nfl/trending/drop",
+            {"lookback_hours": 12, "limit": 5},
+        ),
+    ],
+)
+def test_get_trending_players_params(
+    client, fake_get, kwargs, expected_url, expected_params
+):
+    client.get_trending_players(**kwargs)
+
+    assert fake_get.last["url"] == expected_url
+    assert fake_get.last["params"] == expected_params
+    assert fake_get.last["headers"] == client.headers
+    assert fake_get.last["timeout"] == client.timeout

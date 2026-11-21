@@ -297,3 +297,33 @@ class SleeperClient:
         return requests.get(
             url=url, params=params, headers=self.headers, timeout=self.timeout
         )
+
+    def get_trending_players(
+        self, action_type: str, hours: int | None = None, limit: int | None = None
+    ) -> requests.Response:
+        """Fetch the NFL players most added or dropped across Sleeper leagues.
+
+        Args:
+            action_type: ``"add"`` for the most-added players, or ``"drop"``
+                for the most-dropped.
+            hours: How many hours back to count adds or drops. If None, Sleeper
+                uses its default of 24.
+            limit: The maximum number of players to return. If None, Sleeper
+                uses its default of 25.
+
+        Returns:
+            The response from ``GET /players/nfl/trending/<action_type>``, with
+            ``hours`` sent as ``lookback_hours`` and ``limit`` as ``limit``.
+            The body is a list of ``{"player_id": ..., "count": ...}`` objects,
+            sorted by count.
+        """
+        url = f"{self.base_url}/players/nfl/trending/{action_type}"
+
+        params = {}
+        if hours is not None:
+            params["lookback_hours"] = hours
+        if limit is not None:
+            params["limit"] = limit
+        return requests.get(
+            url=url, params=params, headers=self.headers, timeout=self.timeout
+        )

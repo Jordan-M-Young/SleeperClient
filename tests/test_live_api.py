@@ -55,3 +55,18 @@ def test_get_league_matchups(client, league_id):
     resp = client.get_league_matchups(league_id, week="1")
     assert resp.status_code == 200
     assert isinstance(resp.json(), list)
+
+
+@pytest.mark.parametrize("action_type", ["add", "drop"])
+def test_get_trending_players_limit(client, action_type):
+    resp = client.get_trending_players(action_type, limit=3)
+    assert resp.status_code == 200
+    players = resp.json()
+    assert len(players) == 3
+    assert {"player_id", "count"} <= players[0].keys()
+
+
+def test_get_trending_players_lookback_hours(client):
+    last_hour = client.get_trending_players("add", hours=1, limit=1).json()
+    last_week = client.get_trending_players("add", hours=168, limit=1).json()
+    assert last_week[0]["count"] > last_hour[0]["count"]
