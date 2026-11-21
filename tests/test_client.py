@@ -101,3 +101,20 @@ def test_get_user_requires_an_identifier(client, fake_get):
     with pytest.raises(ValueError):
         client.get_user()
     assert fake_get.calls == []
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "expected_params"),
+    [
+        ({}, {"active": "true"}),
+        ({"active": False}, {}),
+        ({"position": "QB"}, {"position": "QB", "active": "true"}),
+        ({"position": "QB", "active": False}, {"position": "QB"}),
+    ],
+)
+def test_get_all_players_params(client, fake_get, kwargs, expected_params):
+    client.get_all_players(**kwargs)
+
+    assert fake_get.last["url"] == f"{BASE}/players/nfl"
+    assert fake_get.last["params"] == expected_params
+    assert fake_get.last["timeout"] == client.timeout

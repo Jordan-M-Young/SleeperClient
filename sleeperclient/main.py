@@ -269,10 +269,12 @@ class SleeperClient:
         url = f"{self.base_url}/draft/{draft_id}/traded_picks"
         return requests.get(url=url, headers=self.headers, timeout=self.timeout)
 
-    def get_all_players(self, position=None, active=True):
+    def get_all_players(
+        self, position: str | None = None, active: bool = True
+    ) -> requests.Response:
         """Fetch NFL players, optionally filtered by position and active status.
 
-        The unfiltered response is large (several MB), so Sleeper asks that you
+        The unfiltered response is large (about 15 MB), so Sleeper asks that you
         call this endpoint at most once a day and cache the result.
 
         Args:
@@ -282,15 +284,16 @@ class SleeperClient:
 
         Returns:
             The response from ``GET /players/nfl``, with ``position`` and
-            ``active`` added as query parameters.
+            ``active`` sent as query parameters.
         """
         url = f"{self.base_url}/players/nfl"
 
-        if position and active:
-            url = f"{url}?position={position}&active=true"
-        elif position:
-            url = f"{url}?position={position}"
-        else:
-            url = f"{url}?active=true"
+        params = {}
+        if position:
+            params["position"] = position
+        if active:
+            params["active"] = "true"
 
-        return requests.get(url=url, headers=self.headers, timeout=self.timeout)
+        return requests.get(
+            url=url, params=params, headers=self.headers, timeout=self.timeout
+        )
